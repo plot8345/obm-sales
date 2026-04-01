@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBM Sales Report – Al Ahmed</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --deep: #0d1f3c;
+    --ocean: #1a3a5c;
+    --teal: #0e8a7a;
+    --gold: #c9a84c;
+    --white: #f5f0e8;
+    --muted: #8a9ab5;
+    --card: #111e35;
+    --border: rgba(201,168,76,0.2);
+    --profit: #2ecc71;
+    --danger: #e74c3c;
+    --pending: #f39c12;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at top left, rgba(14,138,122,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(201,168,76,0.06) 0%, transparent 50%);
+  }
+  header {
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px 14px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-top { display: flex; align-items: center; justify-content: space-between; }
+  .brand-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); line-height: 1; }
+  .brand-sub { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); letter-spacing: 0.15em; margin-top: 3px; text-transform: uppercase; }
+  .year-badge { background: var(--ocean); border: 1px solid var(--border); color: var(--gold); font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 5px 12px; border-radius: 20px; }
+  .summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px 16px 0; }
+  .sum-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; position: relative; overflow: hidden; }
+  .sum-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .c-orders::before { background: var(--gold); }
+  .c-sales::before { background: var(--teal); }
+  .c-pending::before { background: var(--pending); }
+  .c-profit::before { background: var(--profit); }
+  .sum-label { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+  .sum-value { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; line-height: 1; }
+  .c-orders .sum-value { color: var(--gold); }
+  .c-sales .sum-value { color: var(--teal); }
+  .c-pending .sum-value { color: var(--pending); }
+  .c-profit .sum-value { color: var(--profit); }
+  .tabs { display: flex; padding: 16px 16px 0; }
+  .tab { flex: 1; padding: 10px 8px; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .tab:first-child { border-radius: 10px 0 0 10px; }
+  .tab:last-child { border-radius: 0 10px 10px 0; }
+  .tab.active { background: var(--ocean); color: var(--gold); border-color: var(--gold); }
+  .section { padding: 16px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .form-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .form-row { margin-bottom: 14px; }
+  .form-label { display: block; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+  input, select { width: 100%; background: var(--deep); border: 1px solid var(--border); color: var(--white); padding: 10px 12px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+  input:focus, select:focus { border-color: var(--gold); }
+  select option { background: var(--deep); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .pending-toggle { display: flex; align-items: center; gap: 10px; background: var(--deep); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; margin-bottom: 10px; }
+  .pending-toggle input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--pending); cursor: pointer; flex-shrink: 0; }
+  .pending-toggle label { font-size: 0.85rem; color: var(--white); cursor: pointer; }
+  .pending-fields { display: none; }
+  .pending-fields.show { display: block; }
+  .expense-row { display: grid; grid-template-columns: 1fr 90px auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .btn-add-exp { background: none; border: 1px dashed var(--border); color: var(--muted); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; width: 100%; margin-top: 6px; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .btn-add-exp:hover { border-color: var(--gold); color: var(--gold); }
+  .profit-preview { background: var(--deep); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-top: 14px; }
+  .profit-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 0.85rem; }
+  .profit-row.divider { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
+  .profit-row.total { font-weight: 600; font-size: 0.95rem; }
+  .val-neg { color: #e07a6a; }
+  .val-pos { color: var(--profit); }
+  .val-pending { color: var(--pending); }
+  .btn-save { width: 100%; background: linear-gradient(135deg, var(--teal), #0a6e60); border: none; color: white; padding: 14px; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 16px; }
+  .record-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; position: relative; overflow: hidden; }
+  .record-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .has-pending::before { background: var(--pending); }
+  .fully-paid::before { background: var(--profit); }
+  .rec-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .rec-engine { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold); }
+  .rec-meta { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-top: 3px; }
+  .rec-profit { font-family: 'Playfair Display', serif; font-size: 1.1rem; text-align: right; }
+  .rec-profit-label { font-size: 0.6rem; color: var(--muted); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; text-align: right; }
+  .pending-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(243,156,18,0.15); border: 1px solid rgba(243,156,18,0.4); color: var(--pending); font-size: 0.7rem; font-family: 'DM Mono', monospace; padding: 3px 8px; border-radius: 6px; margin-top: 5px; }
+  .paid-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3); color: var(--profit); font-size: 0.7rem; font-family: 'DM Mono', monospace; padding: 3px 8px; border-radius: 6px; margin-top: 5px; }
+  .rec-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.78rem; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 8px; }
+  .rec-item { display: flex; flex-direction: column; gap: 2px; }
+  .rec-item-label { color: var(--muted); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .rec-item-val { color: var(--white); font-size: 0.82rem; }
+  .rec-expenses { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .rec-exp-title { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; font-family: 'DM Mono', monospace; }
+  .exp-chip { display: inline-block; background: var(--deep); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; font-size: 0.72rem; margin: 2px 3px 2px 0; }
+  .exp-chip span { color: var(--muted); }
+  .btn-mark-paid { display: block; width: 100%; margin-top: 10px; background: rgba(243,156,18,0.1); border: 1px solid rgba(243,156,18,0.4); color: var(--pending); padding: 8px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+  .btn-mark-paid:hover { background: rgba(243,156,18,0.2); }
+  .btn-delete { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 2px 6px; border-radius: 4px; }
+  .btn-delete:hover { color: var(--danger); }
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .empty-text { font-size: 0.85rem; line-height: 1.6; }
+  .hidden { display: none !important; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--teal); color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; z-index: 999; transition: transform 0.3s; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* DRIVE SYNC */
+  .drive-bar {
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .drive-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .drive-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .drive-dot.connected { background: var(--profit); }
+  .drive-dot.syncing { background: var(--pending); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .drive-btns { display: flex; gap: 6px; }
+  .btn-drive {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-drive:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-drive.primary { background: rgba(14,138,122,0.15); border-color: var(--teal); color: var(--teal); }
+  .btn-drive.primary:hover { background: rgba(14,138,122,0.25); }
+
+  /* DRIVE MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .modal-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+  .modal-step {
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .step-num {
+    background: var(--ocean);
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-text { font-size: 0.82rem; color: var(--white); line-height: 1.5; }
+  .step-text input {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    padding: 8px 10px;
+  }
+  .modal-btns { display: flex; gap: 8px; margin-top: 20px; }
+  .btn-modal-cancel { flex: 1; background: none; border: 1px solid var(--border); color: var(--muted); padding: 10px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; }
+  .btn-modal-ok { flex: 2; background: linear-gradient(135deg, var(--teal), #0a6e60); border: none; color: white; padding: 10px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+</style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="brand-name">Al Ahmed ⚓</div>
+      <div class="brand-sub">OBM Sales Report</div>
+    </div>
+    <div class="year-badge" id="yearBadge">FY 2026</div>
+  </div>
+</header>
+
+<!-- DRIVE BAR -->
+<div class="drive-bar">
+  <div class="drive-status">
+    <div class="drive-dot" id="driveDot"></div>
+    <span id="driveStatusText">Not connected to Drive</span>
+  </div>
+  <div class="drive-btns">
+    <button class="btn-drive" id="btnDriveConnect" onclick="showDriveSetup()">☁️ Connect Drive</button>
+    <button class="btn-drive primary hidden" id="btnBackup" onclick="backupToDrive()">⬆ Backup</button>
+    <button class="btn-drive hidden" id="btnRestore" onclick="restoreFromDrive()">⬇ Restore</button>
+  </div>
+</div>
+
+<!-- DRIVE SETUP MODAL -->
+<div class="modal-overlay hidden" id="driveModal">
+  <div class="modal">
+    <div class="modal-title">☁️ Connect Google Drive</div>
+    <div class="modal-sub">Your sale records will be backed up as a JSON file in your Google Drive. You need a Google API Client ID to set this up once.</div>
+    <div class="modal-step">
+      <div class="step-num">1</div>
+      <div class="step-text">Go to <strong>console.cloud.google.com</strong> → Create project → Enable Drive API → Create OAuth 2.0 Client ID (Web app) → Add your GitHub Pages URL as Authorized Origin</div>
+    </div>
+    <div class="modal-step">
+      <div class="step-num">2</div>
+      <div class="step-text">Paste your Client ID below:
+        <input type="text" id="clientIdInput" placeholder="xxxx.apps.googleusercontent.com">
+      </div>
+    </div>
+    <div class="modal-step">
+      <div class="step-num">3</div>
+      <div class="step-text">Tap <strong>Connect</strong> — sign in with Google, then use Backup / Restore anytime.</div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="hideDriveModal()">Cancel</button>
+      <button class="btn-modal-ok" onclick="initDrive()">Connect Google Drive</button>
+    </div>
+  </div>
+</div>
+
+<div class="summary">
+  <div class="sum-card c-orders"><div class="sum-label">Total Orders</div><div class="sum-value" id="totalOrders">0</div></div>
+  <div class="sum-card c-sales"><div class="sum-label">Total Sales</div><div class="sum-value" id="totalSales">₹0</div></div>
+  <div class="sum-card c-pending"><div class="sum-label">Pending</div><div class="sum-value" id="totalPending">₹0</div></div>
+  <div class="sum-card c-profit"><div class="sum-label">Net Profit</div><div class="sum-value" id="totalProfit">₹0</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('records')">📋 Records</button>
+  <button class="tab" onclick="switchTab('add')">➕ Add Sale</button>
+</div>
+
+<div class="section" id="tabRecords">
+  <div class="section-title">Sales Records</div>
+  <div id="recordsList"></div>
+</div>
+
+<div class="section hidden" id="tabAdd">
+  <div class="section-title">New Sale Entry</div>
+  <div class="form-card">
+    <div class="form-row">
+      <label class="form-label">Date of Sale</label>
+      <input type="date" id="fDate">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Broker / Agent (optional)</label>
+      <input type="text" id="fBroker" placeholder="Leave blank if no broker">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Engine Model & Specs</label>
+      <input type="text" id="fEngine" placeholder="e.g. Yamaha 9.9 HP OBM">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Buyer Name</label>
+      <input type="text" id="fBuyer" placeholder="e.g. Baba Joseph (Harnai)">
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label class="form-label">Purchase Price (₹)</label>
+        <input type="number" id="fPurchase" placeholder="119743" oninput="calcProfit()">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Sale Price (₹)</label>
+        <input type="number" id="fSale" placeholder="129000" oninput="calcProfit()">
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Payment Status</label>
+      <div class="pending-toggle" onclick="togglePending(event)">
+        <input type="checkbox" id="hasPending">
+        <label for="hasPending">Payment is partially pending</label>
+      </div>
+      <div class="pending-fields" id="pendingFields">
+        <div class="form-grid">
+          <div>
+            <label class="form-label">Amount Received (₹)</label>
+            <input type="number" id="fReceived" placeholder="120000" oninput="calcProfit()">
+          </div>
+          <div>
+            <label class="form-label">Pending Amount (₹)</label>
+            <input type="number" id="fPending" placeholder="9000" readonly style="color:var(--pending);">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Expenses Breakdown</label>
+      <div id="expensesList"></div>
+      <button class="btn-add-exp" onclick="addExpenseRow()">+ Add Expense</button>
+    </div>
+    <div class="profit-preview">
+      <div class="profit-row"><span>Sale Price</span><span id="pvSale" class="val-pos">₹0</span></div>
+      <div class="profit-row"><span>Purchase Price</span><span id="pvPurchase" class="val-neg">₹0</span></div>
+      <div class="profit-row"><span>Total Expenses</span><span id="pvExpenses" class="val-neg">₹0</span></div>
+      <div class="profit-row divider" id="pvPendingRow" style="display:none;"><span>⏳ Pending from Buyer</span><span id="pvPendingAmt" class="val-pending">₹0</span></div>
+      <div class="profit-row divider total"><span>Net Profit</span><span id="pvProfit" class="val-pos">₹0</span></div>
+    </div>
+    <button class="btn-save" onclick="saveRecord()">Save Sale Record</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const KEY = 'alahmed_obm_v3';
+  let records = [];
+  let expenseCount = 0;
+
+  function loadData() {
+    const saved = localStorage.getItem(KEY);
+    if (saved) { records = JSON.parse(saved); return; }
+    // Seed with both records
+    records = [
+      {
+        id: 1, date: '2026-03-31', broker: 'Safdar',
+        engine: 'Yamaha 9.9 HP OBM', buyer: 'Prakash Balya Khale',
+        purchase: 117758, sale: 130000,
+        expenses: [
+          { label: 'Expense in Kerala', amount: 3925 },
+          { label: 'Expense in Ratnagiri', amount: 650 },
+          { label: 'Expense in Harnai', amount: 1500 }
+        ],
+        totalExp: 6075, profit: 6167,
+        received: 130000, pending: 0, pendingPaid: false
+      },
+      {
+        id: 2, date: '2026-03-31', broker: '',
+        engine: 'Suzuki DF 9.9 Four Stroke', buyer: 'Baba Joseph (Harnai)',
+        purchase: 119743, sale: 129000,
+        expenses: [
+          { label: 'Expense in Kerala', amount: 3925 },
+          { label: 'Expense in Ratnagiri', amount: 650 },
+          { label: 'Expense in Harnai', amount: 1000 }
+        ],
+        totalExp: 5575, profit: 3682,
+        received: 120000, pending: 9000, pendingPaid: false
+      }
+    ];
+    persist();
+  }
+
+  function persist() { localStorage.setItem(KEY, JSON.stringify(records)); }
+  function fmt(n) { return Math.round(n).toLocaleString('en-IN'); }
+
+  function togglePending(e) {
+    const cb = document.getElementById('hasPending');
+    if (e && e.target !== cb) cb.checked = !cb.checked;
+    document.getElementById('pendingFields').classList.toggle('show', cb.checked);
+    document.getElementById('pvPendingRow').style.display = cb.checked ? 'flex' : 'none';
+    calcProfit();
+  }
+
+  function addExpenseRow(label = '', amount = '') {
+    expenseCount++;
+    const id = expenseCount;
+    const div = document.createElement('div');
+    div.className = 'expense-row';
+    div.id = 'expRow_' + id;
+    div.innerHTML = `
+      <input type="text" placeholder="Expense description" id="expLabel_${id}" value="${label}" oninput="calcProfit()">
+      <input type="number" placeholder="₹" id="expAmt_${id}" value="${amount}" oninput="calcProfit()">
+      <button onclick="removeExp(${id})" style="background:none;border:none;color:#e07a6a;cursor:pointer;font-size:1rem;padding:4px;">✕</button>
+    `;
+    document.getElementById('expensesList').appendChild(div);
+    calcProfit();
+  }
+
+  function removeExp(id) {
+    const el = document.getElementById('expRow_' + id);
+    if (el) el.remove();
+    calcProfit();
+  }
+
+  function getExpenses() {
+    const rows = document.querySelectorAll('#expensesList .expense-row');
+    return Array.from(rows).map(row => {
+      const inputs = row.querySelectorAll('input');
+      return { label: inputs[0].value.trim() || 'Expense', amount: parseFloat(inputs[1].value) || 0 };
+    }).filter(e => e.label || e.amount);
+  }
+
+  function calcProfit() {
+    const purchase = parseFloat(document.getElementById('fPurchase').value) || 0;
+    const sale = parseFloat(document.getElementById('fSale').value) || 0;
+    const totalExp = getExpenses().reduce((s, e) => s + e.amount, 0);
+    const profit = sale - purchase - totalExp;
+    const hasPending = document.getElementById('hasPending').checked;
+    const received = parseFloat(document.getElementById('fReceived').value) || 0;
+    const pending = hasPending ? Math.max(0, sale - received) : 0;
+    if (hasPending) document.getElementById('fPending').value = pending || '';
+
+    document.getElementById('pvSale').textContent = '₹' + fmt(sale);
+    document.getElementById('pvPurchase').textContent = '−₹' + fmt(purchase);
+    document.getElementById('pvExpenses').textContent = '−₹' + fmt(totalExp);
+    document.getElementById('pvPendingAmt').textContent = '₹' + fmt(pending);
+    const el = document.getElementById('pvProfit');
+    el.textContent = (profit < 0 ? '−' : '') + '₹' + fmt(Math.abs(profit));
+    el.style.color = profit >= 0 ? 'var(--profit)' : 'var(--danger)';
+  }
+
+  function saveRecord() {
+    const engine = document.getElementById('fEngine').value.trim();
+    const buyer = document.getElementById('fBuyer').value.trim();
+    const sale = parseFloat(document.getElementById('fSale').value) || 0;
+    if (!engine || !buyer || !sale) { showToast('⚠️ Fill Engine, Buyer & Sale Price', 'var(--danger)'); return; }
+
+    const purchase = parseFloat(document.getElementById('fPurchase').value) || 0;
+    const expenses = getExpenses();
+    const totalExp = expenses.reduce((s, e) => s + e.amount, 0);
+    const profit = sale - purchase - totalExp;
+    const hasPending = document.getElementById('hasPending').checked;
+    const received = hasPending ? (parseFloat(document.getElementById('fReceived').value) || sale) : sale;
+    const pending = hasPending ? Math.max(0, sale - received) : 0;
+
+    records.unshift({
+      id: Date.now(),
+      date: document.getElementById('fDate').value || new Date().toISOString().split('T')[0],
+      broker: document.getElementById('fBroker').value.trim(),
+      engine, buyer, purchase, sale, expenses, totalExp, profit,
+      received, pending, pendingPaid: false
+    });
+    persist();
+    resetForm();
+    renderRecords();
+    updateSummary();
+    switchTab('records');
+    showToast('✅ Sale record saved!');
+  }
+
+  function markPaid(id) {
+    const rec = records.find(r => r.id === id);
+    if (!rec) return;
+    rec.pendingPaid = true;
+    rec.received = rec.sale;
+    rec.pending = 0;
+    persist();
+    renderRecords();
+    updateSummary();
+    showToast('✅ Payment marked as received!');
+  }
+
+  function deleteRecord(id) {
+    if (!confirm('Delete this record?')) return;
+    records = records.filter(r => r.id !== id);
+    persist();
+    renderRecords();
+    updateSummary();
+    showToast('🗑️ Record deleted');
+  }
+
+  function resetForm() {
+    ['fDate','fBroker','fEngine','fBuyer','fPurchase','fSale','fReceived','fPending'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('hasPending').checked = false;
+    document.getElementById('pendingFields').classList.remove('show');
+    document.getElementById('pvPendingRow').style.display = 'none';
+    document.getElementById('expensesList').innerHTML = '';
+    expenseCount = 0;
+    calcProfit();
+  }
+
+  function formatDate(d) {
+    if (!d) return '';
+    const [y, m, day] = d.split('-');
+    return `${day} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]} ${y}`;
+  }
+
+  function renderRecords() {
+    const el = document.getElementById('recordsList');
+    if (!records.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">⚓</div><div class="empty-text">No records yet.<br>Tap <strong>Add Sale</strong> to begin.</div></div>`;
+      return;
+    }
+    el.innerHTML = records.map(r => {
+      const isPending = r.pending > 0 && !r.pendingPaid;
+      return `
+      <div class="record-card ${isPending ? 'has-pending' : 'fully-paid'}">
+        <button class="btn-delete" onclick="deleteRecord(${r.id})">✕</button>
+        <div class="rec-header">
+          <div>
+            <div class="rec-engine">${r.engine}</div>
+            <div class="rec-meta">${formatDate(r.date)}${r.broker ? ' · via ' + r.broker : ''}</div>
+            ${isPending ? `<div class="pending-badge">⏳ ₹${fmt(r.pending)} pending</div>` : `<div class="paid-badge">✅ Fully Paid</div>`}
+          </div>
+          <div>
+            <div class="rec-profit-label">Net Profit</div>
+            <div class="rec-profit" style="color:${r.profit >= 0 ? 'var(--profit)' : 'var(--danger)'}">
+              ${r.profit < 0 ? '−' : ''}₹${fmt(Math.abs(r.profit))}
+            </div>
+          </div>
+        </div>
+        <div class="rec-details">
+          <div class="rec-item"><span class="rec-item-label">Buyer</span><span class="rec-item-val">${r.buyer}</span></div>
+          <div class="rec-item"><span class="rec-item-label">Sale Price</span><span class="rec-item-val">₹${fmt(r.sale)}</span></div>
+          <div class="rec-item"><span class="rec-item-label">Purchase Price</span><span class="rec-item-val">₹${fmt(r.purchase)}</span></div>
+          <div class="rec-item"><span class="rec-item-label">Total Expenses</span><span class="rec-item-val">₹${fmt(r.totalExp)}</span></div>
+          ${isPending ? `
+          <div class="rec-item"><span class="rec-item-label">Received</span><span class="rec-item-val" style="color:var(--profit)">₹${fmt(r.received)}</span></div>
+          <div class="rec-item"><span class="rec-item-label">Pending</span><span class="rec-item-val" style="color:var(--pending)">₹${fmt(r.pending)}</span></div>` : ''}
+        </div>
+        ${r.expenses.length ? `<div class="rec-expenses"><div class="rec-exp-title">Expense Breakdown</div>${r.expenses.map(e => `<span class="exp-chip">${e.label} <span>₹${fmt(e.amount)}</span></span>`).join('')}</div>` : ''}
+        ${isPending ? `<button class="btn-mark-paid" onclick="markPaid(${r.id})">✅ Mark ₹${fmt(r.pending)} as Received</button>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  function updateSummary() {
+    const totalSales = records.reduce((s, r) => s + r.sale, 0);
+    const totalPending = records.reduce((s, r) => s + (r.pendingPaid ? 0 : r.pending), 0);
+    const totalProfit = records.reduce((s, r) => s + r.profit, 0);
+    document.getElementById('totalOrders').textContent = records.length;
+    document.getElementById('totalSales').textContent = '₹' + fmt(totalSales);
+    document.getElementById('totalPending').textContent = '₹' + fmt(totalPending);
+    document.getElementById('totalProfit').textContent = (totalProfit < 0 ? '−' : '') + '₹' + fmt(Math.abs(totalProfit));
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tabRecords').classList.toggle('hidden', tab !== 'records');
+    document.getElementById('tabAdd').classList.toggle('hidden', tab !== 'add');
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'records')));
+  }
+
+  function showToast(msg, bg = 'var(--teal)') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.style.background = bg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  document.getElementById('yearBadge').textContent = 'FY ' + new Date().getFullYear();
+  loadData();
+  renderRecords();
+  updateSummary();
+
+  // ─── GOOGLE DRIVE SYNC ───────────────────────────────────────────
+  const DRIVE_KEY = 'alahmed_obm_drive_client_id';
+  const BACKUP_FILENAME = 'alahmed_obm_sales_backup.json';
+  const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
+  let driveToken = null;
+  let driveFileId = localStorage.getItem('alahmed_obm_drive_file_id') || null;
+
+  function showDriveSetup() {
+    const savedId = localStorage.getItem(DRIVE_KEY);
+    if (savedId) document.getElementById('clientIdInput').value = savedId;
+    document.getElementById('driveModal').classList.remove('hidden');
+  }
+  function hideDriveModal() {
+    document.getElementById('driveModal').classList.add('hidden');
+  }
+
+  function initDrive() {
+    const clientId = document.getElementById('clientIdInput').value.trim();
+    if (!clientId) { showToast('⚠️ Please enter Client ID', 'var(--danger)'); return; }
+    localStorage.setItem(DRIVE_KEY, clientId);
+    hideDriveModal();
+    setDriveStatus('syncing', 'Connecting...');
+
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: DRIVE_SCOPE,
+      callback: (resp) => {
+        if (resp.error) { setDriveStatus('off', 'Connection failed'); showToast('❌ Drive connection failed', 'var(--danger)'); return; }
+        driveToken = resp.access_token;
+        setDriveStatus('connected', 'Connected to Drive');
+        document.getElementById('btnDriveConnect').textContent = '✓ Connected';
+        document.getElementById('btnDriveConnect').classList.add('primary');
+        document.getElementById('btnBackup').classList.remove('hidden');
+        document.getElementById('btnRestore').classList.remove('hidden');
+        showToast('✅ Google Drive connected!');
+      }
+    });
+    client.requestAccessToken();
+  }
+
+  function setDriveStatus(state, text) {
+    const dot = document.getElementById('driveDot');
+    const statusText = document.getElementById('driveStatusText');
+    dot.className = 'drive-dot';
+    if (state === 'connected') dot.classList.add('connected');
+    if (state === 'syncing') dot.classList.add('syncing');
+    statusText.textContent = text;
+  }
+
+  async function backupToDrive() {
+    if (!driveToken) { showToast('⚠️ Connect Drive first', 'var(--pending)'); return; }
+    setDriveStatus('syncing', 'Backing up...');
+    try {
+      const content = JSON.stringify({ records, backedUpAt: new Date().toISOString() });
+      const blob = new Blob([content], { type: 'application/json' });
+
+      if (driveFileId) {
+        // Update existing file
+        await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
+          method: 'PATCH',
+          headers: { 'Authorization': 'Bearer ' + driveToken, 'Content-Type': 'application/json' },
+          body: blob
+        });
+      } else {
+        // Create new file
+        const meta = { name: BACKUP_FILENAME, parents: ['appDataFolder'] };
+        const form = new FormData();
+        form.append('metadata', new Blob([JSON.stringify(meta)], { type: 'application/json' }));
+        form.append('file', blob);
+        const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + driveToken },
+          body: form
+        });
+        const data = await res.json();
+        driveFileId = data.id;
+        localStorage.setItem('alahmed_obm_drive_file_id', driveFileId);
+      }
+      setDriveStatus('connected', 'Backed up · ' + new Date().toLocaleTimeString());
+      showToast('✅ Backed up to Google Drive!');
+    } catch (e) {
+      setDriveStatus('connected', 'Backup failed');
+      showToast('❌ Backup failed. Try again.', 'var(--danger)');
+    }
+  }
+
+  async function restoreFromDrive() {
+    if (!driveToken) { showToast('⚠️ Connect Drive first', 'var(--pending)'); return; }
+    if (!confirm('Restore from Google Drive? This will replace your current local records.')) return;
+    setDriveStatus('syncing', 'Restoring...');
+    try {
+      let fileId = driveFileId;
+      if (!fileId) {
+        // Search for file
+        const res = await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='" + BACKUP_FILENAME + "'", {
+          headers: { 'Authorization': 'Bearer ' + driveToken }
+        });
+        const data = await res.json();
+        if (!data.files || !data.files.length) { showToast('⚠️ No backup found in Drive', 'var(--pending)'); setDriveStatus('connected', 'No backup found'); return; }
+        fileId = data.files[0].id;
+        driveFileId = fileId;
+        localStorage.setItem('alahmed_obm_drive_file_id', fileId);
+      }
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+        headers: { 'Authorization': 'Bearer ' + driveToken }
+      });
+      const data = await res.json();
+      if (data.records) {
+        records = data.records;
+        persist();
+        renderRecords();
+        updateSummary();
+        setDriveStatus('connected', 'Restored · ' + new Date().toLocaleTimeString());
+        showToast('✅ Records restored from Drive!');
+      }
+    } catch (e) {
+      setDriveStatus('connected', 'Restore failed');
+      showToast('❌ Restore failed. Try again.', 'var(--danger)');
+    }
+  }
+
+  // Auto-reconnect if client ID saved
+  window.addEventListener('load', () => {
+    const savedId = localStorage.getItem(DRIVE_KEY);
+    if (savedId) {
+      document.getElementById('driveStatusText').textContent = 'Client ID saved — tap Connect Drive to sign in';
+    }
+  });
+</script>
+</body>
+</html>
