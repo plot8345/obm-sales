@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Al Ahmed · OBM Sales</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Jost:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root {
+  --ink: #080e1a;
+  --deep: #0b1422;
+  --hull: #101c30;
+  --keel: #162540;
+  --water: #1d3558;
+  --foam: #2a4a73;
+  --gold: #c8a84b;
+  --gold2: #e2c87a;
+  --gold3: #f0dfa0;
+  --bone: #f0ead8;
+  --mist: #a8b8cc;
+  --dim: #5a7090;
+  --profit: #3dcf82;
+  --loss: #e05a5a;
+  --warn: #f0a030;
+  --card-bg: rgba(16,28,48,0.95);
+  --border: rgba(200,168,75,0.18);
+  --border2: rgba(200,168,75,0.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--ink);
+  color: var(--bone);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════
+   LOGIN PAGE
+═══════════════════════════════════════ */
+#loginPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.login-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(29,53,88,0.6) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(200,168,75,0.08) 0%, transparent 60%);
+}
+
+/* Animated wave lines */
+.waves {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 200px; overflow: hidden; opacity: 0.15;
+}
+.wave {
+  position: absolute; bottom: 0; left: -50%;
+  width: 200%; height: 120px;
+  background: radial-gradient(ellipse at center bottom, var(--gold) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: waveMove 8s ease-in-out infinite;
+}
+.wave:nth-child(2) { height: 80px; animation-delay: -3s; animation-duration: 11s; opacity: 0.6; }
+.wave:nth-child(3) { height: 60px; animation-delay: -6s; animation-duration: 14s; opacity: 0.4; }
+@keyframes waveMove { 0%,100%{transform:translateX(0) scaleY(1)} 50%{transform:translateX(5%) scaleY(1.1)} }
+
+/* Grid texture */
+.grid-texture {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(200,168,75,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,168,75,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.login-card {
+  position: relative; z-index: 10;
+  width: 100%; max-width: 360px;
+  padding: 0 20px;
+  animation: fadeUp 0.8s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+.login-anchor {
+  text-align: center;
+  margin-bottom: 32px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.anchor-icon {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: radial-gradient(circle, rgba(200,168,75,0.12) 0%, transparent 70%);
+  margin-bottom: 16px;
+  position: relative;
+  animation: anchorPulse 4s ease-in-out infinite;
+}
+@keyframes anchorPulse { 0%,100%{box-shadow:0 0 0 0 rgba(200,168,75,0.3)} 50%{box-shadow:0 0 0 16px rgba(200,168,75,0)} }
+
+.anchor-svg { width: 38px; height: 38px; fill: var(--gold); }
+
+.login-title {
+  font-family: 'Jost', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--gold2);
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+.login-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--dim);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.login-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 28px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(200,168,75,0.1);
+}
+
+.login-field-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.login-input-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+.login-input {
+  width: 100%;
+  background: rgba(8,14,26,0.6);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--bone);
+  font-family: 'DM Mono', monospace;
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  padding: 14px 48px 14px 16px;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.login-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,168,75,0.1);
+}
+.login-eye {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--dim); cursor: pointer;
+  font-size: 1.1rem; padding: 4px;
+  transition: color 0.2s;
+}
+.login-eye:hover { color: var(--gold); }
+
+.login-error {
+  background: rgba(224,90,90,0.12);
+  border: 1px solid rgba(224,90,90,0.3);
+  border-radius: 8px;
+  color: var(--loss);
+  font-size: 0.8rem;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: none;
+  text-align: center;
+}
+.login-error.show { display: block; animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+.btn-login {
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold) 0%, #9a7530 100%);
+  border: none;
+  border-radius: 10px;
+  color: var(--ink);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-login::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.btn-login:hover::before { opacity: 1; }
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(200,168,75,0.35); }
+.btn-login:active { transform: translateY(0); }
+
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+}
+
+/* ═══════════════════════════════════════
+   MAIN APP
+═══════════════════════════════════════ */
+#appPage { display: none; }
+
+/* HEADER */
+.app-header {
+  background: var(--deep);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+}
+.app-brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-anchor {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--gold), #9a7530);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.brand-anchor svg { width: 18px; height: 18px; fill: var(--ink); }
+.brand-text-main {
+  font-family: 'Jost', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+.brand-text-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.52rem;
+  color: var(--dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.header-right { display: flex; align-items: center; gap: 8px; }
+.year-chip {
+  background: rgba(200,168,75,0.1);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.1em;
+}
+.btn-logout {
+  background: none; border: 1px solid rgba(90,112,144,0.3);
+  color: var(--dim); font-size: 0.7rem; font-family: 'Jost', sans-serif;
+  padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-logout:hover { border-color: var(--loss); color: var(--loss); }
+
+/* DRIVE BAR */
+.drive-bar {
+  background: rgba(11,20,34,0.8);
+  border-bottom: 1px solid var(--border2);
+  padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  backdrop-filter: blur(10px);
+}
+.drive-status { display:flex; align-items:center; gap:7px; font-size:.68rem; color:var(--dim); font-family:'DM Mono',monospace; }
+.drive-dot { width:7px; height:7px; border-radius:50%; background:var(--dim); flex-shrink:0; }
+.drive-dot.connected { background:var(--profit); box-shadow:0 0 6px rgba(61,207,130,0.5); }
+.drive-dot.syncing { background:var(--warn); animation:blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+.drive-btns { display:flex; gap:5px; flex-wrap:wrap; }
+.btn-drive {
+  background: none; border: 1px solid var(--border2); color: var(--dim);
+  padding: 4px 10px; border-radius: 6px; font-size: .68rem;
+  font-family: 'Jost', sans-serif; font-weight: 500; cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.btn-drive:hover { border-color: var(--gold); color: var(--gold); }
+.btn-drive.active { background: rgba(61,207,130,0.1); border-color: rgba(61,207,130,0.4); color: var(--profit); }
+.btn-drive.pdf-btn { border-color: rgba(29,53,88,0.8); color: var(--mist); }
+.btn-drive.pdf-btn:hover { border-color: var(--water); color: var(--bone); background: rgba(29,53,88,0.3); }
+
+/* SUMMARY */
+.summary-section { padding: 16px 16px 0; }
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.sum-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 16px 14px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.sum-card:hover { border-color: var(--border); }
+.sum-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  border-radius: 14px 14px 0 0;
+}
+.sc-orders::after { background: linear-gradient(90deg, var(--gold), transparent); }
+.sc-sales::after { background: linear-gradient(90deg, #2a8ccc, transparent); }
+.sc-pending::after { background: linear-gradient(90deg, var(--warn), transparent); }
+.sc-profit::after { background: linear-gradient(90deg, var(--profit), transparent); }
+
+.sum-icon {
+  font-size: 1.2rem; margin-bottom: 8px; opacity: 0.6;
+}
+.sum-label {
+  font-family: 'DM Mono', monospace; font-size: .58rem;
+  text-transform: uppercase; letter-spacing: .15em; color: var(--dim); margin-bottom: 5px;
+}
+.sum-value {
+  font-family:'Roboto Mono','DM Mono',monospace;
+  font-size:1.25rem; font-weight:700; line-height:1; letter-spacing:-.01em;
+}
+.sc-orders .sum-value { color: var(--gold2); }
+.sc-sales .sum-value { color: #5ab5f0; }
+.sc-pending .sum-value { color: var(--warn); }
+.sc-profit .sum-value { color: var(--profit); }
+
+/* NAV TABS */
+.nav-tabs {
+  display: flex; padding: 14px 16px 0; gap: 6px;
+}
+.nav-tab {
+  flex: 1; padding: 11px 8px;
+  background: var(--hull);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  color: var(--dim);
+  font-family: 'Jost', sans-serif; font-size: .78rem; font-weight: 500;
+  cursor: pointer; transition: all .25s;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.nav-tab:hover { background: var(--keel); color: var(--mist); }
+.nav-tab.active {
+  background: linear-gradient(135deg, rgba(200,168,75,0.15), rgba(200,168,75,0.05));
+  border-color: rgba(200,168,75,0.35);
+  color: var(--gold2);
+}
+
+/* SECTION */
+.section { padding: 14px 16px; }
+.sec-title {
+  font-family: 'Jost', sans-serif;
+  font-size: 1rem; font-weight: 600; color: var(--gold2);
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-title::after { content: ''; flex:1; height:1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+/* FORM */
+.form-wrap {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.edit-notice {
+  background: rgba(200,168,75,0.08);
+  border: 1px solid rgba(200,168,75,0.25);
+  border-radius: 8px;
+  color: var(--gold);
+  font-size: .78rem; padding: 10px 14px; margin-bottom: 16px;
+  display: none;
+}
+.edit-notice.show { display: block; }
+
+.f-row { margin-bottom: 14px; }
+.f-label {
+  display: block;
+  font-family: 'DM Mono', monospace; font-size: .58rem;
+  text-transform: uppercase; letter-spacing: .15em; color: var(--dim); margin-bottom: 7px;
+}
+.f-input {
+  width: 100%;
+  background: rgba(8,14,26,0.6);
+  border: 1px solid rgba(200,168,75,0.12);
+  border-radius: 9px;
+  color: var(--bone);
+  font-family: 'Jost', sans-serif; font-size: .88rem;
+  padding: 11px 14px; outline: none;
+  transition: border-color .25s, box-shadow .25s;
+}
+.f-input:focus { border-color: rgba(200,168,75,0.45); box-shadow: 0 0 0 3px rgba(200,168,75,0.07); }
+.f-input::placeholder { color: var(--dim); }
+select.f-input option { background: var(--hull); }
+.f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.pending-toggle {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(240,160,48,0.06);
+  border: 1px solid rgba(240,160,48,0.2);
+  border-radius: 9px; padding: 11px 14px; cursor: pointer; margin-bottom: 10px;
+  transition: background .2s;
+}
+.pending-toggle:hover { background: rgba(240,160,48,0.1); }
+.pending-toggle input[type=checkbox] { width:16px; height:16px; accent-color:var(--warn); flex-shrink:0; cursor:pointer; }
+.pending-toggle label { font-size:.82rem; color:var(--bone); cursor:pointer; }
+.pending-fields { display:none; } .pending-fields.show { display:block; }
+
+/* EXPENSE ROW */
+.exp-row { display:grid; grid-template-columns:1fr 90px auto; gap:8px; align-items:center; margin-bottom:8px; }
+.btn-add-exp {
+  background: none; border: 1px dashed rgba(200,168,75,0.2);
+  color: var(--dim); padding: 9px; border-radius: 9px; font-size: .78rem;
+  cursor: pointer; width: 100%; margin-top: 5px; font-family: 'Jost', sans-serif;
+  transition: all .2s;
+}
+.btn-add-exp:hover { border-color: var(--gold); color: var(--gold); }
+
+/* PROFIT PREVIEW */
+.profit-preview {
+  background: rgba(8,14,26,0.7);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px; margin-top: 14px;
+}
+.pp-row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; font-size:.83rem; }
+.pp-row span:last-child { font-family:'Roboto Mono','DM Mono',monospace; font-size:.82rem; font-weight:500; }
+.pp-row.sep { border-top:1px solid var(--border2); margin-top:8px; padding-top:10px; }
+.pp-row.big { font-size:.92rem; font-weight:600; }
+.pp-row.big span:last-child { font-family:'Roboto Mono','DM Mono',monospace; font-size:.92rem; font-weight:700; }
+.c-neg { color:#e07a6a; } .c-pos { color:var(--profit); } .c-warn { color:var(--warn); }
+
+/* SAVE BUTTON */
+.btn-save {
+  width: 100%;
+  background: linear-gradient(135deg, #0e6e5f, #0a5548);
+  border: 1px solid rgba(61,207,130,0.25);
+  border-radius: 10px; color: white;
+  font-family: 'Jost', sans-serif; font-size: .9rem; font-weight: 600;
+  letter-spacing: .05em; padding: 14px; cursor: pointer; margin-top: 16px;
+  transition: all .25s; position: relative; overflow: hidden;
+}
+.btn-save:hover { background: linear-gradient(135deg, #0f7d6c, #0c6054); box-shadow: 0 6px 20px rgba(14,110,95,0.4); }
+
+/* RECORD CARDS */
+.rec-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .25s, transform .2s;
+}
+.rec-card:hover { border-color: var(--border); transform: translateY(-1px); }
+.rec-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:16px 0 0 16px; }
+.rc-pending::before { background: linear-gradient(180deg, var(--warn), rgba(240,160,48,0.3)); }
+.rc-paid::before { background: linear-gradient(180deg, var(--profit), rgba(61,207,130,0.3)); }
+
+/* Card shimmer */
+.rec-card::after {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(200,168,75,0.1), transparent);
+}
+
+.rc-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:10px; }
+.rc-left { flex:1; min-width:0; }
+.rc-engine { font-family:'Jost',sans-serif; font-size:.95rem; font-weight:600; color:var(--bone); line-height:1.3; }
+.rc-meta { font-family:'DM Mono',monospace; font-size:.6rem; color:var(--dim); margin-top:4px; letter-spacing:.05em; }
+.rc-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:.62rem; font-family:'DM Mono',monospace;
+  padding:3px 9px; border-radius:20px; margin-top:6px;
+}
+.badge-paid { background:rgba(61,207,130,0.1); border:1px solid rgba(61,207,130,0.25); color:var(--profit); }
+.badge-pending { background:rgba(240,160,48,0.1); border:1px solid rgba(240,160,48,0.3); color:var(--warn); }
+.rc-right { text-align:right; flex-shrink:0; }
+.rc-profit-lbl { font-family:'DM Mono',monospace; font-size:.55rem; text-transform:uppercase; letter-spacing:.1em; color:var(--dim); margin-bottom:3px; }
+.rc-profit-val { font-family:'Roboto Mono','DM Mono',monospace; font-size:1rem; font-weight:700; letter-spacing:0; }
+
+.rc-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; border-top:1px solid var(--border2); padding-top:12px; margin-top:8px; }
+.rc-item-lbl { font-family:'DM Mono',monospace; font-size:.55rem; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); margin-bottom:2px; }
+.rc-item-val { font-family:'Roboto Mono','DM Mono',monospace; font-size:.78rem; color:var(--bone); font-weight:500; }
+
+.rc-exps { margin-top:10px; border-top:1px solid var(--border2); padding-top:10px; padding-bottom:12px; }
+.rc-exps-title { font-family:'DM Mono',monospace; font-size:.55rem; text-transform:uppercase; letter-spacing:.12em; color:var(--dim); margin-bottom:7px; }
+.exp-tag {
+  display:inline-block; background:rgba(29,53,88,0.5); border:1px solid rgba(42,74,115,0.5);
+  border-radius:6px; padding:3px 9px; font-size:.7rem; margin:2px 3px 2px 0;
+}
+.exp-tag em { color:var(--mist); font-style:normal; font-family:'Roboto Mono','DM Mono',monospace; font-size:.68rem; }
+
+.btn-mark-paid {
+  display:block; width:100%; margin-top:12px;
+  background:rgba(240,160,48,0.08); border:1px solid rgba(240,160,48,0.3);
+  color:var(--warn); padding:9px; border-radius:9px;
+  font-family:'Jost',sans-serif; font-size:.8rem; font-weight:600; cursor:pointer;
+  transition:all .2s;
+}
+.btn-mark-paid:hover { background:rgba(240,160,48,0.16); }
+
+/* ACTION BAR — bottom of card */
+.rc-action-bar {
+  display: flex;
+  margin-top: 12px;
+  border-top: 1px solid var(--border2);
+  margin-left: -18px; margin-right: -18px;
+}
+.btn-act {
+  flex: 1; background: none; border: none;
+  border-right: 1px solid var(--border2);
+  padding: 9px 6px; cursor: pointer;
+  font-size: .72rem; font-family: 'Jost', sans-serif; font-weight: 500;
+  color: var(--dim); transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.btn-act:last-child { border-right: none; }
+.btn-act:hover { background: rgba(255,255,255,0.03); }
+.btn-act.edit:hover { color: var(--gold); background: rgba(200,168,75,0.06); }
+.btn-act.pdf:hover { color: #5ab5f0; background: rgba(90,181,240,0.06); }
+.btn-act.del:hover { color: var(--loss); background: rgba(224,90,90,0.06); }
+
+/* DRIVE MODAL */
+.modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:300; display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px); }
+.modal-box { background:var(--hull); border:1px solid var(--border); border-radius:20px; padding:26px; width:100%; max-width:360px; box-shadow:0 40px 80px rgba(0,0,0,0.6); }
+.modal-title { font-family:'Jost',sans-serif; font-size:1.1rem; font-weight:700; color:var(--gold2); margin-bottom:6px; letter-spacing:.04em; }
+.modal-sub { font-size:.78rem; color:var(--dim); margin-bottom:20px; line-height:1.6; }
+.modal-step { display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; }
+.step-n { background:linear-gradient(135deg,var(--gold),#9a7530); color:var(--ink); font-family:'DM Mono',monospace; font-size:.7rem; font-weight:700; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.step-t { font-size:.8rem; color:var(--bone); line-height:1.5; }
+.step-t input { margin-top:8px; width:100%; background:rgba(8,14,26,0.6); border:1px solid var(--border); border-radius:8px; color:var(--bone); font-family:'DM Mono',monospace; font-size:.78rem; padding:9px 12px; outline:none; }
+.step-t input:focus { border-color:var(--gold); }
+.modal-btns { display:flex; gap:8px; margin-top:20px; }
+.btn-mc { flex:1; background:none; border:1px solid var(--border2); color:var(--dim); padding:10px; border-radius:9px; font-family:'Jost',sans-serif; font-size:.83rem; cursor:pointer; }
+.btn-mo { flex:2; background:linear-gradient(135deg,var(--gold),#9a7530); border:none; color:var(--ink); padding:10px; border-radius:9px; font-family:'Jost',sans-serif; font-size:.83rem; font-weight:700; cursor:pointer; }
+
+/* EMPTY */
+.empty-state { text-align:center; padding:48px 20px; color:var(--dim); }
+.empty-icon { font-size:2.8rem; margin-bottom:14px; opacity:0.4; }
+.empty-txt { font-size:.85rem; line-height:1.7; }
+
+.hidden { display:none !important; }
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px);
+  background:var(--hull); border:1px solid var(--border); color:var(--bone);
+  padding:12px 22px; border-radius:30px; font-size:.82rem; font-weight:500;
+  z-index:999; transition:transform .35s cubic-bezier(.175,.885,.32,1.275); white-space:nowrap;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN PAGE ═══════════ -->
+<div id="loginPage">
+  <div class="login-bg"></div>
+  <div class="grid-texture"></div>
+  <div class="waves"><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
+
+  <div class="login-card">
+    <div class="login-anchor">
+      <div class="anchor-icon">
+        <svg class="anchor-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM11 8.07A9.01 9.01 0 0 0 3.07 17H7a5 5 0 0 0 4 4.9V10.07A3.01 3.01 0 0 1 9 8.07zM15 8.07c-.31.18-.62.37-.9.58A3 3 0 0 1 13 10.07V21.9A5 5 0 0 0 17 17h3.93A9.01 9.01 0 0 0 15 8.07zM5 17a7 7 0 0 0 5 6.32V19a3 3 0 0 1-3-3H5zm9 2.32A7 7 0 0 0 19 17h-2a3 3 0 0 1-3 3v.32zM11 8h2v2h-2z"/>
+        </svg>
+      </div>
+      <div class="login-title">Al Ahmed</div>
+      <div class="login-sub">OBM Sales Portal</div>
+    </div>
+
+    <div class="login-box">
+      <label class="login-field-label">Access Password</label>
+      <div class="login-input-wrap">
+        <input class="login-input" type="password" id="loginPwd" placeholder="••••••••" maxlength="20"
+          onkeydown="if(event.key==='Enter') doLogin()">
+        <button class="login-eye" onclick="togglePwd()" id="eyeBtn">👁</button>
+      </div>
+      <div class="login-error" id="loginError">⚠ Incorrect password. Please try again.</div>
+      <button class="btn-login" onclick="doLogin()">Enter Portal</button>
+    </div>
+
+    <div class="login-footer">Al Ahmed Fishing Boat · Secured Access · 2026</div>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN APP ═══════════ -->
+<div id="appPage">
+
+  <div class="app-header">
+    <div class="app-brand">
+      <div class="brand-anchor">
+        <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM11 8.07A9.01 9.01 0 0 0 3.07 17H7a5 5 0 0 0 4 4.9V10.07A3.01 3.01 0 0 1 9 8.07zM15 8.07c-.31.18-.62.37-.9.58A3 3 0 0 1 13 10.07V21.9A5 5 0 0 0 17 17h3.93A9.01 9.01 0 0 0 15 8.07zM5 17a7 7 0 0 0 5 6.32V19a3 3 0 0 1-3-3H5zm9 2.32A7 7 0 0 0 19 17h-2a3 3 0 0 1-3 3v.32zM11 8h2v2h-2z"/></svg>
+      </div>
+      <div>
+        <div class="brand-text-main">Al Ahmed</div>
+        <div class="brand-text-sub">OBM Sales Report</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="year-chip" id="yearChip">FY 2026</div>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- DRIVE BAR -->
+  <div class="drive-bar">
+    <div class="drive-status">
+      <div class="drive-dot" id="driveDot"></div>
+      <span id="driveStatusTxt">Not connected</span>
+    </div>
+    <div class="drive-btns">
+      <button class="btn-drive" id="btnConnect" onclick="showDriveModal()">☁ Connect Drive</button>
+      <button class="btn-drive active hidden" id="btnBackup" onclick="backupDrive()">⬆ Backup</button>
+      <button class="btn-drive hidden" id="btnRestore" onclick="restoreDrive()">⬇ Restore</button>
+      <button class="btn-drive pdf-btn" onclick="exportAllPDF()">📄 Export All PDF</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-section">
+    <div class="summary-grid">
+      <div class="sum-card sc-orders">
+        <div class="sum-icon">📦</div>
+        <div class="sum-label">Total Orders</div>
+        <div class="sum-value" id="sOrders">0</div>
+      </div>
+      <div class="sum-card sc-sales">
+        <div class="sum-icon">💰</div>
+        <div class="sum-label">Total Sales</div>
+        <div class="sum-value" id="sSales">₹0</div>
+      </div>
+      <div class="sum-card sc-pending">
+        <div class="sum-icon">⏳</div>
+        <div class="sum-label">Pending</div>
+        <div class="sum-value" id="sPending">₹0</div>
+      </div>
+      <div class="sum-card sc-profit">
+        <div class="sum-icon">📈</div>
+        <div class="sum-label">Net Profit</div>
+        <div class="sum-value" id="sProfit">₹0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('records')">📋 Records</button>
+    <button class="nav-tab" onclick="switchTab('add')">＋ Add Sale</button>
+  </div>
+
+  <!-- RECORDS -->
+  <div class="section" id="tabRecords">
+    <div class="sec-title">Sales Records</div>
+    <div id="recordsList"></div>
+  </div>
+
+  <!-- ADD/EDIT FORM -->
+  <div class="section hidden" id="tabAdd">
+    <div class="sec-title" id="formTitle">New Sale Entry</div>
+    <div class="form-wrap">
+      <div class="edit-notice" id="editNotice">✏️ Editing record — update values and tap Save.</div>
+      <input type="hidden" id="editId">
+
+      <div class="f-row"><label class="f-label">Date of Sale</label><input class="f-input" type="date" id="fDate"></div>
+      <div class="f-row"><label class="f-label">Broker / Agent (optional)</label><input class="f-input" type="text" id="fBroker" placeholder="Leave blank if direct sale"></div>
+      <div class="f-row"><label class="f-label">Engine Model & Specs</label><input class="f-input" type="text" id="fEngine" placeholder="e.g. Yamaha 9.9 HP OBM"></div>
+      <div class="f-row"><label class="f-label">Buyer Name & Location</label><input class="f-input" type="text" id="fBuyer" placeholder="e.g. Baba Joseph (Harnai)"></div>
+
+      <div class="f-grid">
+        <div class="f-row"><label class="f-label">Purchase Price (₹)</label><input class="f-input" type="number" id="fPurchase" placeholder="0" oninput="calcP()"></div>
+        <div class="f-row"><label class="f-label">Sale Price (₹)</label><input class="f-input" type="number" id="fSale" placeholder="0" oninput="calcP()"></div>
+      </div>
+
+      <div class="f-row">
+        <label class="f-label">Payment Status</label>
+        <div class="pending-toggle" onclick="togglePend(event)">
+          <input type="checkbox" id="chkPend">
+          <label for="chkPend">Payment is partially pending</label>
+        </div>
+        <div class="pending-fields" id="pendFields">
+          <div class="f-grid">
+            <div><label class="f-label">Received (₹)</label><input class="f-input" type="number" id="fReceived" placeholder="0" oninput="calcP()"></div>
+            <div><label class="f-label">Pending (₹)</label><input class="f-input" type="number" id="fPendAmt" readonly style="color:var(--warn);"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="f-row">
+        <label class="f-label">Expenses Breakdown</label>
+        <div id="expList"></div>
+        <button class="btn-add-exp" onclick="addExp()">＋ Add Expense Row</button>
+      </div>
+
+      <div class="profit-preview">
+        <div class="pp-row"><span style="color:var(--dim)">Sale Price</span><span id="ppSale" class="c-pos">₹0</span></div>
+        <div class="pp-row"><span style="color:var(--dim)">Purchase Price</span><span id="ppPurch" class="c-neg">₹0</span></div>
+        <div class="pp-row"><span style="color:var(--dim)">Total Expenses</span><span id="ppExp" class="c-neg">₹0</span></div>
+        <div class="pp-row sep hidden" id="ppPendRow"><span style="color:var(--dim)">⏳ Pending from Buyer</span><span id="ppPendAmt" class="c-warn">₹0</span></div>
+        <div class="pp-row sep big"><span>Net Profit</span><span id="ppProfit" class="c-pos">₹0</span></div>
+      </div>
+
+      <button class="btn-save" id="btnSave" onclick="saveRec()">Save Sale Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- DRIVE MODAL -->
+<div class="modal-bg hidden" id="driveModal">
+  <div class="modal-box">
+    <div class="modal-title">☁ Connect Google Drive</div>
+    <div class="modal-sub">Backup your sale records securely to Google Drive using your OAuth Client ID.</div>
+    <div class="modal-step"><div class="step-n">1</div><div class="step-t">Go to <strong>console.cloud.google.com</strong> → Your project → Credentials → Copy OAuth 2.0 Client ID</div></div>
+    <div class="modal-step"><div class="step-n">2</div><div class="step-t">Paste Client ID here:<input type="text" id="clientIdIn" placeholder="xxxx.apps.googleusercontent.com"></div></div>
+    <div class="modal-step"><div class="step-n">3</div><div class="step-t">Tap Connect and sign in with Google.</div></div>
+    <div class="modal-btns">
+      <button class="btn-mc" onclick="hideDriveModal()">Cancel</button>
+      <button class="btn-mo" onclick="initDrive()">Connect Drive</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────────
+const PWD = '25261022';
+const SESSION_KEY = 'alahmed_obm_auth';
+
+function doLogin() {
+  const val = document.getElementById('loginPwd').value;
+  if (val === PWD) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').style.display = 'block';
+    init();
+  } else {
+    const err = document.getElementById('loginError');
+    err.classList.remove('show');
+    void err.offsetWidth;
+    err.classList.add('show');
+    document.getElementById('loginPwd').value = '';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('appPage').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginPwd').value = '';
+}
+
+function togglePwd() {
+  const inp = document.getElementById('loginPwd');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// Check session on load
+if (sessionStorage.getItem(SESSION_KEY) === '1') {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appPage').style.display = 'block';
+}
+
+// ── DATA ──────────────────────────────────────────────────────────
+const DKEY = 'alahmed_obm_v3';
+let records = [];
+let expCount = 0;
+
+function loadData() {
+  const s = localStorage.getItem(DKEY);
+  if (s) { records = JSON.parse(s); return; }
+  records = [
+    { id:1, date:'2026-03-31', broker:'Safdar', engine:'Yamaha 9.9 HP OBM', buyer:'Prakash Balya Khale',
+      purchase:117758, sale:130000,
+      expenses:[{label:'Expense in Kerala',amount:3925},{label:'Expense in Ratnagiri',amount:650},{label:'Expense in Harnai',amount:1500}],
+      totalExp:6075, profit:6167, received:130000, pending:0, pendingPaid:false },
+    { id:2, date:'2026-03-31', broker:'', engine:'Suzuki DF 9.9 Four Stroke', buyer:'Baba Joseph (Harnai)',
+      purchase:119743, sale:129000,
+      expenses:[{label:'Expense in Kerala',amount:3925},{label:'Expense in Ratnagiri',amount:650},{label:'Expense in Harnai',amount:1000}],
+      totalExp:5575, profit:3682, received:120000, pending:9000, pendingPaid:false }
+  ];
+  persist();
+}
+
+function persist() { localStorage.setItem(DKEY, JSON.stringify(records)); }
+function fmt(n) { return Math.round(n).toLocaleString('en-IN'); }
+function fmtDate(d) {
+  if (!d) return '';
+  const [y,m,day] = d.split('-');
+  return `${day} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]} ${y}`;
+}
+
+// ── FORM ──────────────────────────────────────────────────────────
+function togglePend(e) {
+  const cb = document.getElementById('chkPend');
+  if (e && e.target !== cb) cb.checked = !cb.checked;
+  document.getElementById('pendFields').classList.toggle('show', cb.checked);
+  document.getElementById('ppPendRow').classList.toggle('hidden', !cb.checked);
+  calcP();
+}
+
+function addExp(label='', amount='') {
+  expCount++;
+  const id = expCount;
+  const d = document.createElement('div');
+  d.className = 'exp-row'; d.id = 'er_'+id;
+  d.innerHTML = `
+    <input class="f-input" type="text" placeholder="e.g. Expense in Kerala" id="el_${id}" value="${label}" oninput="calcP()">
+    <input class="f-input" type="number" placeholder="₹" id="ea_${id}" value="${amount}" oninput="calcP()">
+    <button onclick="rmExp(${id})" style="background:none;border:none;color:var(--loss);cursor:pointer;font-size:1.1rem;padding:4px;">✕</button>`;
+  document.getElementById('expList').appendChild(d);
+  calcP();
+}
+
+function rmExp(id) { const e=document.getElementById('er_'+id); if(e) e.remove(); calcP(); }
+
+function getExps() {
+  return Array.from(document.querySelectorAll('#expList .exp-row')).map(r=>{
+    const ins=r.querySelectorAll('input');
+    return {label:ins[0].value.trim()||'Expense', amount:parseFloat(ins[1].value)||0};
+  }).filter(e=>e.label||e.amount);
+}
+
+function calcP() {
+  const pur=parseFloat(document.getElementById('fPurchase').value)||0;
+  const sal=parseFloat(document.getElementById('fSale').value)||0;
+  const exps=getExps(); const totExp=exps.reduce((s,e)=>s+e.amount,0);
+  const prof=sal-pur-totExp;
+  const hp=document.getElementById('chkPend').checked;
+  const rec=parseFloat(document.getElementById('fReceived').value)||0;
+  const pend=hp?Math.max(0,sal-rec):0;
+  if(hp) document.getElementById('fPendAmt').value=pend||'';
+  document.getElementById('ppSale').textContent='₹'+fmt(sal);
+  document.getElementById('ppPurch').textContent='−₹'+fmt(pur);
+  document.getElementById('ppExp').textContent='−₹'+fmt(totExp);
+  document.getElementById('ppPendAmt').textContent='₹'+fmt(pend);
+  const el=document.getElementById('ppProfit');
+  el.textContent=(prof<0?'−':'')+'₹'+fmt(Math.abs(prof));
+  el.className=prof>=0?'c-pos':'c-neg';
+}
+
+function saveRec() {
+  const engine=document.getElementById('fEngine').value.trim();
+  const buyer=document.getElementById('fBuyer').value.trim();
+  const sale=parseFloat(document.getElementById('fSale').value)||0;
+  if(!engine||!buyer||!sale){showToast('⚠ Fill Engine, Buyer & Sale Price','var(--warn)');return;}
+  const pur=parseFloat(document.getElementById('fPurchase').value)||0;
+  const exps=getExps(); const totExp=exps.reduce((s,e)=>s+e.amount,0);
+  const prof=sale-pur-totExp;
+  const hp=document.getElementById('chkPend').checked;
+  const rec=hp?(parseFloat(document.getElementById('fReceived').value)||sale):sale;
+  const pend=hp?Math.max(0,sale-rec):0;
+  const eid=document.getElementById('editId').value;
+  if(eid) {
+    const idx=records.findIndex(r=>r.id==eid);
+    if(idx!==-1) records[idx]={...records[idx],
+      date:document.getElementById('fDate').value||records[idx].date,
+      broker:document.getElementById('fBroker').value.trim(),
+      engine,buyer,purchase:pur,sale,expenses:exps,totalExp:totExp,profit:prof,
+      received:rec,pending:pend,pendingPaid:pend===0};
+    showToast('✅ Record updated!');
+  } else {
+    records.unshift({id:Date.now(),
+      date:document.getElementById('fDate').value||new Date().toISOString().split('T')[0],
+      broker:document.getElementById('fBroker').value.trim(),
+      engine,buyer,purchase:pur,sale,expenses:exps,totalExp:totExp,profit:prof,
+      received:rec,pending:pend,pendingPaid:false});
+    showToast('✅ Sale record saved!');
+  }
+  persist(); resetForm(); renderRecords(); updateSummary(); switchTab('records');
+}
+
+function editRec(id) {
+  const r=records.find(x=>x.id===id); if(!r) return;
+  switchTab('add');
+  document.getElementById('formTitle').textContent='✏️ Edit Sale Record';
+  document.getElementById('editNotice').classList.add('show');
+  document.getElementById('btnSave').textContent='💾 Update Record';
+  document.getElementById('editId').value=id;
+  document.getElementById('fDate').value=r.date;
+  document.getElementById('fBroker').value=r.broker||'';
+  document.getElementById('fEngine').value=r.engine;
+  document.getElementById('fBuyer').value=r.buyer;
+  document.getElementById('fPurchase').value=r.purchase;
+  document.getElementById('fSale').value=r.sale;
+  document.getElementById('expList').innerHTML=''; expCount=0;
+  r.expenses.forEach(e=>addExp(e.label,e.amount));
+  if(r.pending>0&&!r.pendingPaid){
+    document.getElementById('chkPend').checked=true;
+    document.getElementById('pendFields').classList.add('show');
+    document.getElementById('ppPendRow').classList.remove('hidden');
+    document.getElementById('fReceived').value=r.received;
+    document.getElementById('fPendAmt').value=r.pending;
+  }
+  calcP(); window.scrollTo(0,0);
+}
+
+function resetForm() {
+  document.getElementById('editId').value='';
+  document.getElementById('formTitle').textContent='New Sale Entry';
+  document.getElementById('editNotice').classList.remove('show');
+  document.getElementById('btnSave').textContent='Save Sale Record';
+  ['fDate','fBroker','fEngine','fBuyer','fPurchase','fSale','fReceived','fPendAmt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('chkPend').checked=false;
+  document.getElementById('pendFields').classList.remove('show');
+  document.getElementById('ppPendRow').classList.add('hidden');
+  document.getElementById('expList').innerHTML=''; expCount=0; calcP();
+}
+
+function markPaid(id) {
+  const r=records.find(x=>x.id===id); if(!r) return;
+  r.pendingPaid=true; r.received=r.sale; r.pending=0;
+  persist(); renderRecords(); updateSummary(); showToast('✅ Payment marked as received!');
+}
+
+function delRec(id) {
+  if(!confirm('Delete this record?')) return;
+  records=records.filter(r=>r.id!==id);
+  persist(); renderRecords(); updateSummary(); showToast('🗑 Record deleted');
+}
+
+// ── RENDER ────────────────────────────────────────────────────────
+function renderRecords() {
+  const el=document.getElementById('recordsList');
+  if(!records.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">⚓</div><div class="empty-txt">No sale records yet.<br>Tap <strong>Add Sale</strong> to begin tracking.</div></div>`;
+    return;
+  }
+  el.innerHTML=records.map(r=>{
+    const ip=r.pending>0&&!r.pendingPaid;
+    return `
+    <div class="rec-card ${ip?'rc-pending':'rc-paid'}">
+      <div class="rc-top">
+        <div class="rc-left">
+          <div class="rc-engine">${r.engine}</div>
+          <div class="rc-meta">${fmtDate(r.date)}${r.broker?' &nbsp;·&nbsp; via '+r.broker:''}</div>
+          ${ip?`<span class="rc-badge badge-pending">⏳ ₹${fmt(r.pending)} pending</span>`:`<span class="rc-badge badge-paid">✅ Fully Paid</span>`}
+        </div>
+        <div class="rc-right">
+          <div class="rc-profit-lbl">Net Profit</div>
+          <div class="rc-profit-val" style="color:${r.profit>=0?'var(--profit)':'var(--loss)'}">
+            ${r.profit<0?'−':''}₹${fmt(Math.abs(r.profit))}
+          </div>
+        </div>
+      </div>
+      <div class="rc-grid">
+        <div><div class="rc-item-lbl">Buyer</div><div class="rc-item-val">${r.buyer}</div></div>
+        <div><div class="rc-item-lbl">Sale Price</div><div class="rc-item-val">₹${fmt(r.sale)}</div></div>
+        <div><div class="rc-item-lbl">Purchase Price</div><div class="rc-item-val">₹${fmt(r.purchase)}</div></div>
+        <div><div class="rc-item-lbl">Total Expenses</div><div class="rc-item-val">₹${fmt(r.totalExp)}</div></div>
+        ${ip?`<div><div class="rc-item-lbl">Received</div><div class="rc-item-val" style="color:var(--profit)">₹${fmt(r.received)}</div></div>
+              <div><div class="rc-item-lbl">Pending</div><div class="rc-item-val" style="color:var(--warn)">₹${fmt(r.pending)}</div></div>`:''}
+      </div>
+      ${r.expenses.length?`<div class="rc-exps"><div class="rc-exps-title">Expense Breakdown</div>${r.expenses.map(e=>`<span class="exp-tag">${e.label} <em>₹${fmt(e.amount)}</em></span>`).join('')}</div>`:''}
+      ${ip?`<button class="btn-mark-paid" onclick="markPaid(${r.id})">✅ Mark ₹${fmt(r.pending)} as Received</button>`:''}
+      <div class="rc-action-bar">
+        <button class="btn-act edit" onclick="editRec(${r.id})">✏️ Edit</button>
+        <button class="btn-act pdf" onclick="exportOnePDF(${r.id})">📄 PDF</button>
+        <button class="btn-act del" onclick="delRec(${r.id})">🗑 Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateSummary() {
+  document.getElementById('sOrders').textContent=records.length;
+  document.getElementById('sSales').textContent='₹'+fmt(records.reduce((s,r)=>s+r.sale,0));
+  document.getElementById('sPending').textContent='₹'+fmt(records.reduce((s,r)=>s+(r.pendingPaid?0:r.pending),0));
+  const tp=records.reduce((s,r)=>s+r.profit,0);
+  document.getElementById('sProfit').textContent=(tp<0?'−':'')+'₹'+fmt(Math.abs(tp));
+}
+
+function switchTab(t) {
+  document.getElementById('tabRecords').classList.toggle('hidden',t!=='records');
+  document.getElementById('tabAdd').classList.toggle('hidden',t!=='add');
+  document.querySelectorAll('.nav-tab').forEach((el,i)=>el.classList.toggle('active',(i===0)===(t==='records')));
+  if(t==='records') resetForm();
+}
+
+function showToast(msg, color='var(--profit)') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.borderColor=color;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ── PDF ───────────────────────────────────────────────────────────
+function buildPDF(recs) {
+  const ts=recs.reduce((s,r)=>s+r.sale,0), tp=recs.reduce((s,r)=>s+r.profit,0), tpend=recs.reduce((s,r)=>s+(r.pendingPaid?0:r.pending),0);
+  return `<html><head><meta charset="UTF-8"><style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Jost:wght@400;500;600&family=DM+Mono&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Jost',sans-serif;color:#111;background:#fff;padding:28px;max-width:720px;margin:0 auto;}
+  .hdr{text-align:center;border-bottom:2px solid #0b1422;padding-bottom:18px;margin-bottom:22px;}
+  .hdr-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:#0b1422;}
+  .hdr-sub{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#666;margin-top:4px;}
+  .hdr-date{font-size:.72rem;color:#999;margin-top:4px;}
+  .sum{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+  .sb{border:1px solid #ddd;border-radius:8px;padding:12px;text-align:center;}
+  .sb-l{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:#888;font-family:'DM Mono',monospace;}
+  .sb-v{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;margin-top:4px;}
+  .v-gold{color:#9a7530;} .v-blue{color:#1a6eaa;} .v-warn{color:#d08020;} .v-green{color:#1a8a50;}
+  .rec{border:1px solid #ddd;border-radius:10px;padding:16px;margin-bottom:14px;page-break-inside:avoid;}
+  .rt{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+  .re{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:#0b1422;}
+  .rm{font-size:.68rem;color:#888;font-family:'DM Mono',monospace;margin-top:3px;}
+  .rbadge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.62rem;font-weight:600;margin-top:5px;font-family:'DM Mono',monospace;}
+  .b-paid{background:#e8f5ef;color:#1a8a50;border:1px solid #9de0b8;}
+  .b-pend{background:#fef3e2;color:#c07010;border:1px solid #f0c060;}
+  .rp-l{font-size:.6rem;text-transform:uppercase;color:#888;text-align:right;font-family:'DM Mono',monospace;}
+  .rp-v{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;text-align:right;}
+  .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px solid #eee;padding-top:10px;}
+  .ri-l{font-size:.6rem;text-transform:uppercase;color:#888;font-family:'DM Mono',monospace;}
+  .ri-v{font-size:.82rem;margin-top:2px;}
+  .rexps{margin-top:10px;border-top:1px solid #eee;padding-top:8px;}
+  .rexps-t{font-size:.6rem;text-transform:uppercase;color:#888;font-family:'DM Mono',monospace;margin-bottom:6px;}
+  .etag{display:inline-block;background:#f5f5f5;border:1px solid #ddd;border-radius:5px;padding:3px 8px;font-size:.7rem;margin:2px;}
+  .footer{text-align:center;font-size:.65rem;color:#bbb;border-top:1px solid #eee;padding-top:14px;margin-top:22px;font-family:'DM Mono',monospace;letter-spacing:.08em;}
+  </style></head><body>
+  <div class="hdr"><div class="hdr-title">⚓ Al Ahmed · OBM Sales Report</div><div class="hdr-sub">Outboard Motor Sales · ${new Date().getFullYear()}</div><div class="hdr-date">Generated: ${new Date().toLocaleString('en-IN')}</div></div>
+  <div class="sum">
+    <div class="sb"><div class="sb-l">Orders</div><div class="sb-v v-gold">${recs.length}</div></div>
+    <div class="sb"><div class="sb-l">Total Sales</div><div class="sb-v v-blue">₹${fmt(ts)}</div></div>
+    <div class="sb"><div class="sb-l">Pending</div><div class="sb-v v-warn">₹${fmt(tpend)}</div></div>
+    <div class="sb"><div class="sb-l">Net Profit</div><div class="sb-v v-green">₹${fmt(tp)}</div></div>
+  </div>
+  ${recs.map(r=>{const ip=r.pending>0&&!r.pendingPaid;return`
+  <div class="rec">
+    <div class="rt">
+      <div><div class="re">${r.engine}</div><div class="rm">${fmtDate(r.date)}${r.broker?' · via '+r.broker:''}</div>
+      <span class="rbadge ${ip?'b-pend':'b-paid'}">${ip?'⏳ ₹'+fmt(r.pending)+' Pending':'✅ Fully Paid'}</span></div>
+      <div><div class="rp-l">Net Profit</div><div class="rp-v" style="color:${r.profit>=0?'#1a8a50':'#cc3333'}">${r.profit<0?'−':''}₹${fmt(Math.abs(r.profit))}</div></div>
+    </div>
+    <div class="rgrid">
+      <div><div class="ri-l">Buyer</div><div class="ri-v">${r.buyer}</div></div>
+      <div><div class="ri-l">Sale Price</div><div class="ri-v">₹${fmt(r.sale)}</div></div>
+      <div><div class="ri-l">Purchase Price</div><div class="ri-v">₹${fmt(r.purchase)}</div></div>
+      <div><div class="ri-l">Total Expenses</div><div class="ri-v">₹${fmt(r.totalExp)}</div></div>
+      ${ip?`<div><div class="ri-l">Received</div><div class="ri-v" style="color:#1a8a50">₹${fmt(r.received)}</div></div><div><div class="ri-l">Pending</div><div class="ri-v" style="color:#c07010">₹${fmt(r.pending)}</div></div>`:''}
+    </div>
+    ${r.expenses.length?`<div class="rexps"><div class="rexps-t">Expense Breakdown</div>${r.expenses.map(e=>`<span class="etag">${e.label} — ₹${fmt(e.amount)}</span>`).join('')}</div>`:''}
+  </div>`;}).join('')}
+  <div class="footer">Al Ahmed Fishing Boat &nbsp;·&nbsp; plot8345.github.io/obm-sales &nbsp;·&nbsp; Confidential</div>
+  </body></html>`;
+}
+
+function exportAllPDF() {
+  if(!records.length){showToast('⚠ No records to export','var(--warn)');return;}
+  const w=window.open('','_blank','width=760,height=900');
+  w.document.write(buildPDF(records)); w.document.close();
+  w.onload=()=>{w.focus();w.print();};
+}
+
+function exportOnePDF(id) {
+  const r=records.find(x=>x.id===id); if(!r) return;
+  const w=window.open('','_blank','width=760,height=900');
+  w.document.write(buildPDF([r])); w.document.close();
+  w.onload=()=>{w.focus();w.print();};
+}
+
+// ── GOOGLE DRIVE ──────────────────────────────────────────────────
+const CID_KEY='alahmed_obm_cid', FID_KEY='alahmed_obm_fid';
+const BKFILE='alahmed_obm_backup.json';
+const SCOPE='https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
+let driveToken=null, driveFileId=localStorage.getItem(FID_KEY)||null;
+
+function showDriveModal(){
+  const s=localStorage.getItem(CID_KEY);
+  if(s) document.getElementById('clientIdIn').value=s;
+  document.getElementById('driveModal').classList.remove('hidden');
+}
+function hideDriveModal(){document.getElementById('driveModal').classList.add('hidden');}
+
+function initDrive(){
+  const cid=document.getElementById('clientIdIn').value.trim();
+  if(!cid){showToast('⚠ Enter Client ID','var(--warn)');return;}
+  localStorage.setItem(CID_KEY,cid); hideDriveModal();
+  setDS('syncing','Connecting...');
+  google.accounts.oauth2.initTokenClient({client_id:cid,scope:SCOPE,callback:(r)=>{
+    if(r.error){setDS('off','Connection failed');showToast('❌ Drive connection failed','var(--loss)');return;}
+    driveToken=r.access_token; setDS('connected','Connected to Drive');
+    document.getElementById('btnConnect').textContent='✓ Connected';
+    document.getElementById('btnBackup').classList.remove('hidden');
+    document.getElementById('btnRestore').classList.remove('hidden');
+    showToast('✅ Google Drive connected!');
+  }}).requestAccessToken();
+}
+
+function setDS(s,t){
+  const d=document.getElementById('driveDot');
+  d.className='drive-dot';
+  if(s==='connected')d.classList.add('connected');
+  if(s==='syncing')d.classList.add('syncing');
+  document.getElementById('driveStatusTxt').textContent=t;
+}
+
+async function backupDrive(){
+  if(!driveToken){showToast('⚠ Connect Drive first','var(--warn)');return;}
+  setDS('syncing','Backing up...');
+  try{
+    const blob=new Blob([JSON.stringify({records,at:new Date().toISOString()})],{type:'application/json'});
+    if(driveFileId){
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,
+        {method:'PATCH',headers:{'Authorization':'Bearer '+driveToken,'Content-Type':'application/json'},body:blob});
+    } else {
+      const f=new FormData();
+      f.append('metadata',new Blob([JSON.stringify({name:BKFILE,parents:['appDataFolder']})],{type:'application/json'}));
+      f.append('file',blob);
+      const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+        {method:'POST',headers:{'Authorization':'Bearer '+driveToken},body:f});
+      const data=await res.json(); driveFileId=data.id; localStorage.setItem(FID_KEY,driveFileId);
+    }
+    setDS('connected','Backed up · '+new Date().toLocaleTimeString());
+    showToast('✅ Backed up to Google Drive!');
+  }catch(e){setDS('connected','Backup failed');showToast('❌ Backup failed','var(--loss)');}
+}
+
+async function restoreDrive(){
+  if(!driveToken){showToast('⚠ Connect Drive first','var(--warn)');return;}
+  if(!confirm('Restore from Drive? This replaces current local records.')) return;
+  setDS('syncing','Restoring...');
+  try{
+    let fid=driveFileId;
+    if(!fid){
+      const res=await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${BKFILE}'`,
+        {headers:{'Authorization':'Bearer '+driveToken}});
+      const data=await res.json();
+      if(!data.files?.length){showToast('⚠ No backup found','var(--warn)');setDS('connected','No backup');return;}
+      fid=data.files[0].id; driveFileId=fid; localStorage.setItem(FID_KEY,fid);
+    }
+    const res=await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`,
+      {headers:{'Authorization':'Bearer '+driveToken}});
+    const data=await res.json();
+    if(data.records){records=data.records;persist();renderRecords();updateSummary();
+      setDS('connected','Restored · '+new Date().toLocaleTimeString());showToast('✅ Records restored!');}
+  }catch(e){setDS('connected','Restore failed');showToast('❌ Restore failed','var(--loss)');}
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+function init() {
+  document.getElementById('yearChip').textContent='FY '+new Date().getFullYear();
+  loadData(); renderRecords(); updateSummary();
+  const cid=localStorage.getItem(CID_KEY);
+  if(cid) document.getElementById('driveStatusTxt').textContent='Client ID saved — tap Connect Drive';
+}
+
+if(sessionStorage.getItem(SESSION_KEY)==='1') init();
+</script>
+</body>
+</html>
